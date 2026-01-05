@@ -2,254 +2,325 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Compensation Planner 2026-2027</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>CompPlanner 2026-2029</title>
+  
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" type="image/png" href="icon-192.png">
+
   <style>
-    :root { --bg:#0b1020; --card:#111a33; --muted:#9fb0ff; --text:#eef2ff; --line:rgba(255,255,255,.10); --accent: #4f46e5; --accent-hover: #4338ca; --success: #10b981; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: linear-gradient(180deg, #070a14 0%, #0b1020 70%); color:var(--text); min-height: 100vh; padding-bottom: 80px; }
+    :root { 
+        --bg:#0b1020; --card:#161e36; --header:#0f152a; 
+        --muted:#8b9bb4; --text:#eef2ff; --line:rgba(255,255,255,.10); 
+        --accent: #4f46e5; --accent-hover: #4338ca; 
+        --pos: #10b981; --neg: #ef4444;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color:var(--text); padding-bottom: 80px; font-size: 14px; }
     
-    header { padding: 16px; border-bottom:1px solid var(--line); position: sticky; top:0; backdrop-filter: blur(10px); background: rgba(7,10,20,.95); z-index: 50; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px; }
-    header h1 { margin:0; font-size: 18px; margin-right: auto; }
-    header .actions { display: flex; gap: 8px; }
+    /* HEADER */
+    header { padding: 12px 16px; background: var(--header); border-bottom: 1px solid var(--line); position: sticky; top:0; z-index: 100; display:flex; flex-direction: column; gap: 10px; backdrop-filter: blur(8px); }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin:0; font-size: 16px; font-weight: 600; }
     
-    main { padding: 16px; max-width: 1300px; margin: 0 auto; }
+    .company-inputs { display: flex; gap: 10px; }
+    .company-inputs input { background: rgba(0,0,0,0.2); border: 1px solid var(--line); padding: 6px 10px; color: var(--accent); font-weight: bold; border-radius: 4px; width: 100%; font-size: 14px; text-align: center; }
+    .company-inputs input:focus { border-color: var(--accent); outline: none; background: rgba(0,0,0,0.4); }
+
+    /* BUTTONS */
+    button { background: var(--accent); color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px; height: 32px; display: inline-flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    button:active { transform: scale(0.96); }
+    button.secondary { background: rgba(255,255,255,0.1); }
+    button.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    button.small { height: 28px; font-size: 12px; padding: 0 10px; }
     
-    /* DASHBOARD */
-    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
-    .card { background: rgba(17,26,51,.72); border:1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-    .card h3 { margin: 0 0 12px 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+    /* LAYOUT */
+    main { padding: 12px; max-width: 1000px; margin: 0 auto; }
     
-    .stat-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; }
-    .stat-total { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-weight: bold; font-size: 16px; color: #fff; display: flex; justify-content: space-between; }
-    .diff-badge { font-size: 13px; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); }
-    .pos { color: #4ade80; background: rgba(74, 222, 128, 0.15); }
-    .neg { color: #f87171; background: rgba(248, 113, 113, 0.15); }
+    /* DASHBOARD GRID */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
+    @media (min-width: 700px) { .dashboard-grid { grid-template-columns: repeat(4, 1fr); } }
+    
+    .dash-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+    .dash-card h4 { margin: 0 0 8px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+    .dash-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+    .dash-diff { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; }
+    
+    .dash-full { background: var(--card); border: 1px solid var(--accent); border-radius: 8px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .dash-full-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    .pos { color: #6ee7b7; background: rgba(16, 185, 129, 0.15); }
+    .neg { color: #fca5a5; background: rgba(239, 68, 68, 0.15); }
 
     /* CONFIG & TOOLS */
-    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    @media (max-width: 800px) { .config-grid { grid-template-columns: 1fr; } }
+    .section-title { font-size: 12px; font-weight: bold; color: var(--muted); text-transform: uppercase; margin: 24px 0 8px 0; letter-spacing: 0.5px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
     
-    .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 8px; }
-    .config-col { flex: 1; }
-    .config-col label { font-size: 11px; color: rgba(255,255,255,0.6); display: block; margin-bottom: 4px; }
-    .fixed-val { font-size: 13px; font-weight: bold; color: var(--muted); padding: 8px 0; }
-    .sub-head { font-size: 12px; font-weight: bold; color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 8px; margin-top: 12px; }
-
-    .tools { background: #1a2236; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
-    .tool-group { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; min-width: 140px; }
-    .tool-group label { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .control-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-end; }
+    .control-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .control-group label { font-size: 11px; color: var(--muted); }
     
-    .checkbox-group { display:flex; align-items:center; gap:8px; width:100%; margin-top:4px; margin-bottom:8px; padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-    .checkbox-group input { width: auto; margin:0; }
-    .checkbox-group label { margin:0; font-size: 12px; color: #fff; cursor:pointer; }
-
-    select, input { background: rgba(0,0,0,0.3); border: 1px solid var(--line); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    select, input { background: rgba(0,0,0,0.3); border: 1px solid var(--line); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 14px; outline: none; height: 38px; }
     select:focus, input:focus { border-color: var(--accent); }
-    
-    button { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; height: 35px; transition: background 0.2s; white-space: nowrap; }
-    button:hover { background: var(--accent-hover); }
-    button.secondary { background: rgba(255,255,255,0.1); }
-    button.secondary:hover { background: rgba(255,255,255,0.15); }
-    
-    /* TABLE */
-    .table-wrapper { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: rgba(0,0,0,0.2); }
-    table { width: 100%; border-collapse: collapse; min-width: 800px; }
-    
-    th { text-align: left; padding: 12px; background: #1a233a; color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
-    td { padding: 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-    
-    tr:hover td { background: rgba(255,255,255,0.02); }
-    .year-sep { background: rgba(79, 70, 229, 0.15); }
-    .year-sep td { padding: 8px 12px; font-weight: bold; color: var(--accent); text-align: center; font-size: 12px; letter-spacing: 2px; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
 
-    td input { background: transparent; border: 1px solid transparent; text-align: right; font-family: 'Courier New', monospace; font-size: 14px; padding: 8px; }
-    td input:hover:not([readonly]) { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
-    td input:focus { border-color: var(--accent); background: #0f1629; }
-    td input[readonly] { color: #fbbf24; opacity: 0.9; cursor: default; font-weight: bold; } 
+    /* Year Selector in Config */
+    .config-year-select { background: rgba(79, 70, 229, 0.2); border-color: var(--accent); color: #fff; font-weight: bold; text-align: center; }
+
+    /* Radio Group */
+    .radio-group { display: flex; gap: 10px; margin-bottom: 8px; height: 38px; align-items: center; }
+    .radio-label { display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; }
+    .radio-label input { width: auto; height: auto; margin: 0; }
+
+    /* BULK TOOLS SPECIFIC */
+    .year-tags { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 4px; }
+    .year-tag { font-size: 11px; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; white-space: nowrap; }
+    .year-tag:hover { border-color: var(--muted); background: rgba(255,255,255,0.1); }
+
+    /* TABLE */
+    .table-wrapper { border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,0.2); overflow-x: auto; position: relative; }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
     
-    .month-cell { padding-left: 12px; font-size: 13px; color: rgba(255,255,255,0.8); width: 120px; }
-    .total-cell { text-align: right; padding-right: 12px; font-weight: bold; width: 120px; font-family: 'Courier New', monospace; }
+    th { text-align: left; padding: 12px 8px; background: #1a233a; color: rgba(255,255,255,0.7); font-size: 11px; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 0; border-bottom: 1px solid var(--line); vertical-align: middle; height: 44px; }
+    
+    /* Sticky First Column */
+    th:first-child, td:first-child { position: sticky; left: 0; z-index: 2; background: var(--bg); border-right: 1px solid var(--line); }
+    th:first-child { background: #1a233a; }
+    td:first-child { padding: 0 12px; font-size: 13px; color: var(--muted); width: 80px; }
+
+    /* Inputs in table */
+    td input { background: transparent; border: none; text-align: right; font-family: 'Courier New', monospace; font-size: 14px; padding: 0 8px; height: 100%; width: 100%; color: #fff; display: block; }
+    td input:focus { background: #0f1629; box-shadow: inset 0 0 0 1px var(--accent); }
+    td input[readonly] { color: #fbbf24; opacity: 1; font-weight: 600; cursor: default; }
+    
+    /* Collapsible Rows */
+    .year-header { cursor: pointer; background: rgba(79, 70, 229, 0.15); border-top: 1px solid var(--line); }
+    .year-header:hover { background: rgba(79, 70, 229, 0.25); }
+    .year-header td { padding: 10px 12px; font-weight: bold; color: var(--accent); height: auto; text-align: left; }
+    .year-header .toggle-icon { display: inline-block; width: 16px; transition: transform 0.2s; }
+    .year-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+    
+    /* Hidden body */
+    .hidden { display: none; }
+
+    .diff-cell { text-align: right; padding-right: 8px; font-weight: bold; font-family: monospace; font-size: 13px; }
 
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>Compensation Planner</h1>
-    <div style="font-size:12px; opacity:0.7">ESET vs Takeda • 2026 & 2027</div>
+  <div class="header-top">
+      <h1>CompPlanner</h1>
+      <div class="actions">
+          <button class="secondary" onclick="exportJSON()">💾 Export</button>
+          <button class="secondary" onclick="document.getElementById('importFile').click()">📂 Import</button>
+          <button class="danger" onclick="resetAll()">↻ Reset</button>
+      </div>
   </div>
-  <div class="actions">
-      <button class="secondary" onclick="exportJSON()">Export JSON</button>
-      <button class="secondary" onclick="document.getElementById('importFile').click()">Import JSON</button>
-      <button class="secondary" style="background:rgba(220, 38, 38, 0.2)" onclick="resetAll()">Reset Data</button>
+  <div class="company-inputs">
+      <input type="text" id="name_comp_a" value="Company A" onchange="updateCompanyNames()">
+      <input type="text" id="name_comp_b" value="Company B" onchange="updateCompanyNames()">
   </div>
   <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(this)">
 </header>
 
 <main>
 
-  <div class="dashboard">
-    <div class="card">
-      <h3>2026 Overview</h3>
-      <div class="stat-row"><span>ESET Total:</span> <span id="sum_26_eset">0 €</span></div>
-      <div class="stat-row"><span>Takeda Total:</span> <span id="sum_26_takeda">0 €</span></div>
-      <div class="stat-total"><span>Difference:</span> <span id="diff_26" class="diff-badge">0 €</span></div>
+  <div id="dashboardGrid" class="dashboard-grid"></div>
+  <div id="dashboardFull" class="dash-full"></div>
+
+  <div class="section-title">Bonus Settings (Per Year)</div>
+  
+  <div class="card">
+    <div class="control-row" style="margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:12px;">
+        <div class="control-group" style="flex:0 0 100px;">
+             <label>Select Year</label>
+             <select id="year_select_a" class="config-year-select" onchange="loadConfigToUI('A')">
+                 <option value="2026">2026</option>
+                 <option value="2027">2027</option>
+                 <option value="2028">2028</option>
+                 <option value="2029">2029</option>
+             </select>
+        </div>
+        <div class="control-group">
+            <label style="font-weight:bold; color:var(--text); padding-top:10px;" id="lbl_conf_a">Company A</label>
+        </div>
     </div>
-    <div class="card">
-      <h3>2027 Overview</h3>
-      <div class="stat-row"><span>ESET Total:</span> <span id="sum_27_eset">0 €</span></div>
-      <div class="stat-row"><span>Takeda Total:</span> <span id="sum_27_takeda">0 €</span></div>
-      <div class="stat-total"><span>Difference:</span> <span id="diff_27" class="diff-badge">0 €</span></div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label>Payout Frequency</label>
+            <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="freq_a" value="1" onchange="saveConfigFromUI('A')"> 1x</label>
+                <label class="radio-label"><input type="radio" name="freq_a" value="2" onchange="saveConfigFromUI('A')"> 2x</label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Target Bonus (%)</label>
+            <input type="number" id="bonus_pct_a" placeholder="e.g. 20" onchange="saveConfigFromUI('A')">
+        </div>
+        <div class="control-group">
+            <label>Lookback (Months)</label>
+            <input type="number" id="lookback_a" placeholder="e.g. 6 or 12" onchange="saveConfigFromUI('A')">
+        </div>
     </div>
-    <div class="card" style="border-color: var(--accent);">
-      <h3>Cumulative (2 Years)</h3>
-      <div class="stat-row"><span>Total ESET:</span> <span id="grand_eset">0 €</span></div>
-      <div class="stat-row"><span>Total Takeda:</span> <span id="grand_takeda">0 €</span></div>
-      <div class="stat-total"><span>Net Benefit:</span> <span id="grand_diff" class="diff-badge">0 €</span></div>
+    <div class="control-row">
+        <div class="control-group">
+            <label>Payout Month 1</label>
+            <select id="month_a_1" class="month-select" onchange="saveConfigFromUI('A')"></select>
+        </div>
+        <div class="control-group" id="group_month_a_2">
+            <label>Payout Month 2</label>
+            <select id="month_a_2" class="month-select" onchange="saveConfigFromUI('A')"></select>
+        </div>
     </div>
   </div>
 
-  <div class="config-grid">
-      <div class="card">
-          <h3>ESET Bonus Logic</h3>
-          <div style="font-size:11px; opacity:0.6; margin-bottom:12px;">Rule: 20% of Sum of Previous 6 Months</div>
-          
-          <div class="sub-head">Yearly Config (Recurring)</div>
-          <div class="config-row">
-              <div class="config-col">
-                  <label>Payout #1 (Month)</label>
-                  <select id="eset_b1_month" class="month-select" onchange="recalcAll()"></select>
-              </div>
-              <div class="config-col">
-                   <div class="fixed-val">Fixed 20%</div>
-              </div>
-          </div>
-          <div class="config-row">
-              <div class="config-col">
-                  <label>Payout #2 (Month)</label>
-                  <select id="eset_b2_month" class="month-select" onchange="recalcAll()"></select>
-              </div>
-              <div class="config-col">
-                   <div class="fixed-val">Fixed 20%</div>
-              </div>
-          </div>
+  <div class="card">
+    <div class="control-row" style="margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:12px;">
+        <div class="control-group" style="flex:0 0 100px;">
+             <label>Select Year</label>
+             <select id="year_select_b" class="config-year-select" onchange="loadConfigToUI('B')">
+                 <option value="2026">2026</option>
+                 <option value="2027">2027</option>
+                 <option value="2028">2028</option>
+                 <option value="2029">2029</option>
+             </select>
+        </div>
+        <div class="control-group">
+            <label style="font-weight:bold; color:var(--text); padding-top:10px;" id="lbl_conf_b">Company B</label>
+        </div>
+    </div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label>Payout Frequency</label>
+            <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="freq_b" value="1" onchange="saveConfigFromUI('B')"> 1x</label>
+                <label class="radio-label"><input type="radio" name="freq_b" value="2" onchange="saveConfigFromUI('B')"> 2x</label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Target Bonus (%)</label>
+            <input type="number" id="bonus_pct_b" placeholder="e.g. 15" onchange="saveConfigFromUI('B')">
+        </div>
+        <div class="control-group">
+            <label>Lookback (Months)</label>
+            <input type="number" id="lookback_b" placeholder="e.g. 12" onchange="saveConfigFromUI('B')">
+        </div>
+    </div>
+    <div class="control-row">
+        <div class="control-group">
+            <label>Payout Month 1</label>
+            <select id="month_b_1" class="month-select" onchange="saveConfigFromUI('B')"></select>
+        </div>
+        <div class="control-group" id="group_month_b_2">
+            <label>Payout Month 2</label>
+            <select id="month_b_2" class="month-select" onchange="saveConfigFromUI('B')"></select>
+        </div>
+    </div>
+  </div>
+
+  <div class="section-title">Bulk Salary Edit</div>
+  <div class="card">
+    <div class="year-tags">
+        <span class="year-tag" onclick="setBulkYear(2026)">2026</span>
+        <span class="year-tag" onclick="setBulkYear(2027)">2027</span>
+        <span class="year-tag" onclick="setBulkYear(2028)">2028</span>
+        <span class="year-tag" onclick="setBulkYear(2029)">2029</span>
+    </div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label>Target</label>
+            <select id="tool_target" onchange="loadLastValue()">
+                <option value="aBase" id="opt_tool_a">Company A Base</option>
+                <option value="bBase" id="opt_tool_b">Company B Base</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Mode</label>
+            <select id="tool_mode" onchange="toggleMode()">
+                <option value="fixed">Fixed Amount (€)</option>
+                <option value="percent">Increase (%)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label id="lbl_amount">Amount / %</label>
+            <input type="number" id="tool_amount" placeholder="e.g. 3500" onchange="saveLastValue()">
+        </div>
+    </div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label>From</label>
+            <select id="tool_from"></select>
+        </div>
+        <div class="control-group">
+            <label>To</label>
+            <select id="tool_to"></select>
+        </div>
+    </div>
+
+    <div style="margin: 10px 0;">
+        <input type="checkbox" id="tool_cascade" checked style="width:auto; height:auto; vertical-align:middle;">
+        <label for="tool_cascade" style="font-size:12px; color:#fff;">Cascade change to future (keep ratio)?</label>
+    </div>
+
+    <button onclick="applyBulk()" style="width:100%; height:40px;">Apply Bulk Changes</button>
+  </div>
+
+  <div style="display:flex; justify-content:space-between; align-items:end; margin-bottom:8px;">
+      <div class="section-title" style="margin:0;">Monthly Details</div>
+      <div>
+          <button class="secondary small" onclick="toggleAll(false)">Collapse All</button>
+          <button class="secondary small" onclick="toggleAll(true)">Expand All</button>
       </div>
-
-      <div class="card">
-        <h3>Takeda Bonus Logic</h3>
-        <div style="font-size:11px; opacity:0.6; margin-bottom:12px;">Rule: % of Sum of Previous 12 Months (One-off)</div>
-
-        <div class="sub-head">2026 Settings</div>
-        <div class="config-row">
-            <div class="config-col">
-                <label>Target Rate (%)</label>
-                <input type="number" id="takeda_pct_26" value="15" onchange="recalcAll()">
-            </div>
-            <div class="config-col">
-                <label>Payout Month</label>
-                <select id="takeda_month_26" class="month-select" onchange="recalcAll()"></select>
-            </div>
-        </div>
-
-        <div class="sub-head">2027 Settings</div>
-        <div class="config-row">
-            <div class="config-col">
-                <label>Target Rate (%)</label>
-                <input type="number" id="takeda_pct_27" value="15" onchange="recalcAll()">
-            </div>
-            <div class="config-col">
-                <label>Payout Month</label>
-                <select id="takeda_month_27" class="month-select" onchange="recalcAll()"></select>
-            </div>
-        </div>
-
-    </div>
   </div>
-
-  <div class="tools">
-    <div style="width:100%; margin-bottom:8px; font-size:12px; font-weight:bold; color:var(--accent); text-transform:uppercase;">
-      ⚡ Bulk Salary Edit (Smart Fill)
-    </div>
-    
-    <div class="tool-group">
-      <label>Target Company</label>
-      <select id="tool_target" onchange="loadLastValue()">
-        <option value="eBase">ESET - Base Salary</option>
-        <option value="tBase">Takeda - Base Rate</option>
-      </select>
-    </div>
-
-    <div class="tool-group">
-      <label>Operation Mode</label>
-      <select id="tool_mode" onchange="toggleMode()">
-        <option value="fixed">Set Fixed Amount (€)</option>
-        <option value="percent">Increase by % (Raise)</option>
-      </select>
-    </div>
-
-    <div class="tool-group">
-      <label id="lbl_amount">Amount (€)</label>
-      <input type="number" id="tool_amount" placeholder="e.g. 3200" onchange="saveLastValue()">
-    </div>
-
-    <div class="tool-group">
-      <label>From Month</label>
-      <select id="tool_from"></select>
-    </div>
-
-    <div class="tool-group">
-      <label>To Month</label>
-      <select id="tool_to"></select>
-    </div>
-
-    <div class="checkbox-group">
-        <input type="checkbox" id="tool_cascade" checked>
-        <label for="tool_cascade">Cascade change to future months (keep ratio)?</label>
-    </div>
-
-    <button onclick="applyBulk()">Apply Changes</button>
-  </div>
-
+  
   <div class="table-wrapper">
     <table id="mainTable">
       <thead>
         <tr>
-          <th>Month</th>
-          <th style="width:15%">ESET Base</th>
-          <th style="width:15%; color:#fbbf24">ESET Bonus</th>
-          <th style="width:15%">Takeda Base</th>
-          <th style="width:15%; color:#fbbf24">Takeda Bonus</th>
+          <th style="width:80px">Month</th>
+          <th id="th_comp_a">Comp A<br>Base</th>
+          <th>Bonus</th>
+          <th id="th_comp_b">Comp B<br>Base</th>
+          <th>Bonus</th>
           <th style="text-align:right">Diff</th>
         </tr>
       </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+      </table>
   </div>
 
 </main>
 
 <script>
+    // --- GLOBAL CONFIG ---
     const startYear = 2026;
-    const endYear = 2027;
+    const endYear = 2029;
     const monthsEng = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const lastValues = { eBase: '', tBase: '' };
+    
+    // DATA MODEL
     let data = [];
+    let compAName = "Company A";
+    let compBName = "Company B";
+    let lastBulkValues = { aBase: '', bBase: '' };
 
-    // Configuration Fields to save/load
-    const configIds = [
-        'eset_b1_month', 'eset_b2_month',
-        'takeda_pct_26', 'takeda_month_26',
-        'takeda_pct_27', 'takeda_month_27'
-    ];
+    // BONUS CONFIGS (Key = Year)
+    let configA = {};
+    let configB = {};
 
+    // --- INITIALIZATION ---
     function init() {
+        // 1. Initialize Data Array and Configs
         let idCounter = 0;
-        // Generate 24 months (0 to 23)
         for (let y = startYear; y <= endYear; y++) {
             monthsEng.forEach((m, idx) => {
                 data.push({
@@ -257,278 +328,433 @@
                     year: y,
                     monthIdx: idx,
                     monthName: m,
-                    eBase: 0, eBonus: 0,
-                    tBase: 0, tBonus: 0
+                    aBase: 0, aBonus: 0,
+                    bBase: 0, bBonus: 0
                 });
             });
+            // Default Configs
+            configA[y] = { freq: "2", pct: 20, lookback: 6, m1: 4, m2: 10 }; 
+            configB[y] = { freq: "1", pct: 15, lookback: 12, m1: 5, m2: 11 };
         }
 
-        // Populate Bulk Edit Selects
-        const fromSel = document.getElementById('tool_from');
-        const toSel = document.getElementById('tool_to');
-        data.forEach((d, i) => {
-            const label = `${d.monthName} ${d.year}`;
-            fromSel.add(new Option(label, i));
-            toSel.add(new Option(label, i));
-        });
-        toSel.value = data.length - 1; 
+        // 2. Populate Dropdowns (Before render)
+        populateDropdowns();
 
-        // Populate Bonus Selects
-        const bonusSelectors = document.querySelectorAll('.month-select');
-        bonusSelectors.forEach(sel => {
-            monthsEng.forEach((m, i) => sel.add(new Option(m, i)));
-        });
+        // 3. Load Saved Data (Restores state)
+        loadDataLocal();
 
-        // Set Default Bonus Months
-        document.getElementById('eset_b1_month').value = 4; // May
-        document.getElementById('eset_b2_month').value = 10; // Nov
+        // 4. Initial Render
+        updateCompanyNames(false); // UI labels
+        loadConfigToUI('A');
+        loadConfigToUI('B');
         
-        // Takeda defaults
-        document.getElementById('takeda_month_26').value = 5; // Jun 2026
-        document.getElementById('takeda_month_27').value = 5; // Jun 2027
-
+        // IMPORTANT: Render the table structure FIRST, then calculate
+        renderTableStructure();
         recalcAll();
     }
 
+    // --- MAIN CALCULATION ---
     function recalcAll() {
-        // Reset Calculated Bonuses only (Base stays)
-        data.forEach(d => { d.eBonus = 0; d.tBonus = 0; });
+        // Reset bonuses (keep base salary)
+        data.forEach(d => { d.aBonus = 0; d.bBonus = 0; });
 
-        // ESET Config
-        const eM1 = parseInt(document.getElementById('eset_b1_month').value);
-        const eM2 = parseInt(document.getElementById('eset_b2_month').value);
+        // Loop Years
+        for (let year = startYear; year <= endYear; year++) {
+            const offset = (year - startYear) * 12;
+            const cA = configA[year];
+            const cB = configB[year];
 
-        // Takeda Config (Independent years)
-        const tPct26 = parseFloat(document.getElementById('takeda_pct_26').value) || 0;
-        const tMonth26 = parseInt(document.getElementById('takeda_month_26').value);
-        
-        const tPct27 = parseFloat(document.getElementById('takeda_pct_27').value) || 0;
-        const tMonth27 = parseInt(document.getElementById('takeda_month_27').value);
+            if(cA) applyBonusLogic(offset, cA, 'aBase', 'aBonus');
+            if(cB) applyBonusLogic(offset, cB, 'bBase', 'bBonus');
+        }
 
-        [2026, 2027].forEach((year, yIdx) => {
-            const offset = yIdx * 12; // 0 for 2026, 12 for 2027
-            
-            // --- ESET CALC ---
-            const eIdx1 = offset + eM1;
-            const eSum1 = getLookbackSum('eBase', eIdx1, 6);
-            if(data[eIdx1]) data[eIdx1].eBonus += eSum1 * 0.20;
-
-            const eIdx2 = offset + eM2;
-            const eSum2 = getLookbackSum('eBase', eIdx2, 6);
-            if(data[eIdx2]) data[eIdx2].eBonus += eSum2 * 0.20;
-
-            // --- TAKEDA CALC (One-off per year) ---
-            if (year === 2026) {
-                const tIdx = offset + tMonth26;
-                const tSum = getLookbackSum('tBase', tIdx, 12);
-                if(data[tIdx]) data[tIdx].tBonus += tSum * (tPct26 / 100);
-            } else {
-                const tIdx = offset + tMonth27;
-                const tSum = getLookbackSum('tBase', tIdx, 12);
-                if(data[tIdx]) data[tIdx].tBonus += tSum * (tPct27 / 100);
-            }
-        });
-
-        renderTable(); 
+        // Updates
+        updateTableValues();
         updateDashboard();
+        saveDataLocal();
+    }
+
+    function applyBonusLogic(yearOffset, conf, baseField, bonusField) {
+        // Payout 1
+        let idx1 = yearOffset + conf.m1;
+        let sum1 = getLookbackSum(baseField, idx1, conf.lookback);
+        if(data[idx1]) data[idx1][bonusField] += sum1 * (conf.pct / 100);
+
+        // Payout 2 (if enabled)
+        if(conf.freq === "2") {
+            let idx2 = yearOffset + conf.m2;
+            let sum2 = getLookbackSum(baseField, idx2, conf.lookback);
+            if(data[idx2]) data[idx2][bonusField] += sum2 * (conf.pct / 100);
+        }
     }
 
     function getLookbackSum(field, payoutIndex, monthsBack) {
         let sum = 0;
         const fallbackVal = data[0] ? data[0][field] : 0;
-
         for (let i = 1; i <= monthsBack; i++) {
             let targetIdx = payoutIndex - i;
-            if (targetIdx >= 0) {
-                sum += data[targetIdx][field];
-            } else {
-                sum += fallbackVal;
-            }
+            if (targetIdx >= 0) sum += data[targetIdx][field];
+            else sum += fallbackVal;
         }
         return sum;
     }
 
-    function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        let lastYear = null;
+    // --- DASHBOARD UI ---
+    function updateDashboard() {
+        const grid = document.getElementById('dashboardGrid');
+        const full = document.getElementById('dashboardFull');
+        grid.innerHTML = '';
 
-        data.forEach((row, index) => {
-            if (row.year !== lastYear) {
-                const sepRow = document.createElement('tr');
-                sepRow.className = 'year-sep';
-                sepRow.innerHTML = `<td colspan="6">${row.year}</td>`;
-                tbody.appendChild(sepRow);
-                lastYear = row.year;
-            }
+        let grandA = 0, grandB = 0;
 
-            const tr = document.createElement('tr');
-            const diff = (row.tBase + row.tBonus) - (row.eBase + row.eBonus);
-            const diffColor = diff > 0 ? '#4ade80' : (diff < 0 ? '#f87171' : 'rgba(255,255,255,0.3)');
+        for (let y = startYear; y <= endYear; y++) {
+            const yd = data.filter(d => d.year === y);
+            const sumA = yd.reduce((s, c) => s + c.aBase + c.aBonus, 0);
+            const sumB = yd.reduce((s, c) => s + c.bBase + c.bBonus, 0);
+            const diff = sumB - sumA;
+            
+            grandA += sumA; grandB += sumB;
 
-            tr.innerHTML = `
-                <td class="month-cell">${row.monthName}</td>
-                <td><input type="number" value="${row.eBase}" onchange="updateBase(${index}, 'eBase', this.value)" placeholder="-"></td>
-                <td><input type="text" value="${row.eBonus ? fmtVal(row.eBonus) : ''}" readonly placeholder="-"></td>
-                <td><input type="number" value="${row.tBase}" onchange="updateBase(${index}, 'tBase', this.value)" placeholder="-"></td>
-                <td><input type="text" value="${row.tBonus ? fmtVal(row.tBonus) : ''}" readonly placeholder="-"></td>
-                <td class="total-cell" style="color:${diffColor}">${fmt(diff)}</td>
+            grid.innerHTML += `
+                <div class="dash-card">
+                    <h4>${y}</h4>
+                    <div>
+                        <div class="dash-row"><span>${compAName}:</span> <span>${fmt(sumA)}</span></div>
+                        <div class="dash-row"><span>${compBName}:</span> <span>${fmt(sumB)}</span></div>
+                    </div>
+                    <div class="dash-diff">
+                        <span>Diff:</span>
+                        <span class="badge ${diff>=0?'pos':'neg'}">${diff>0?'+':''}${fmt(diff)}</span>
+                    </div>
+                </div>
             `;
-            tbody.appendChild(tr);
+        }
+
+        const grandDiff = grandB - grandA;
+        full.innerHTML = `
+            <div style="font-size:12px; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">
+                Cumulative Net Benefit (${startYear} - ${endYear})
+            </div>
+            <div class="dash-full-flex">
+                <div>
+                    <div style="font-size:14px; margin-bottom:4px;">${compAName} Total: <b>${fmt(grandA)}</b></div>
+                    <div style="font-size:14px;">${compBName} Total: <b>${fmt(grandB)}</b></div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:11px; color:var(--muted);">Total Difference</div>
+                    <div style="font-size:22px; font-weight:bold; color:${grandDiff>=0?'var(--pos)':'var(--neg)'}">
+                        ${grandDiff>0?'+':''}${fmt(grandDiff)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // --- TABLE UI ---
+    // Renders the HTML structure only (headers, rows). Not values.
+    function renderTableStructure() {
+        const table = document.getElementById('mainTable');
+        // Clear existing bodies
+        while (table.tBodies.length > 0) { table.deleteTBody(0); }
+
+        for (let year = startYear; year <= endYear; year++) {
+            // Restore collapse state
+            const isCollapsed = sessionStorage.getItem(`collapsed_${year}`) !== 'false'; 
+
+            // Year Header
+            const thead = table.createTBody();
+            thead.innerHTML = `
+                <tr class="year-header ${isCollapsed ? 'collapsed' : ''}" onclick="toggleYearBody(${year})">
+                    <td colspan="6">
+                        <span class="toggle-icon">▼</span> ${year}
+                    </td>
+                </tr>
+            `;
+
+            // Data Rows Container
+            const tbody = table.createTBody();
+            tbody.id = `tbody_${year}`;
+            tbody.className = isCollapsed ? 'hidden' : '';
+
+            const yearData = data.filter(d => d.year === year);
+            yearData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.id = `row_${row.id}`; // Add ID for easy update
+                tr.innerHTML = `
+                    <td>${row.monthName}</td>
+                    <td><input type="number" id="inp_a_${row.id}" onchange="upd(${row.id},'aBase',this.value)" placeholder="-"></td>
+                    <td><input type="text" id="out_a_${row.id}" readonly tabindex="-1"></td>
+                    <td><input type="number" id="inp_b_${row.id}" onchange="upd(${row.id},'bBase',this.value)" placeholder="-"></td>
+                    <td><input type="text" id="out_b_${row.id}" readonly tabindex="-1"></td>
+                    <td id="diff_${row.id}" class="diff-cell"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    // Updates values in the existing inputs without destroying focus
+    function updateTableValues() {
+        data.forEach(row => {
+            // Base Salary Inputs
+            const inpA = document.getElementById(`inp_a_${row.id}`);
+            const inpB = document.getElementById(`inp_b_${row.id}`);
+            
+            // Only update input value if it differs to avoid cursor jumping if focused
+            if(inpA && parseFloat(inpA.value || 0) !== row.aBase) inpA.value = row.aBase || '';
+            if(inpB && parseFloat(inpB.value || 0) !== row.bBase) inpB.value = row.bBase || '';
+
+            // Calculated Fields
+            const outA = document.getElementById(`out_a_${row.id}`);
+            const outB = document.getElementById(`out_b_${row.id}`);
+            const diffCell = document.getElementById(`diff_${row.id}`);
+
+            if(outA) outA.value = fmtVal(row.aBonus);
+            if(outB) outB.value = fmtVal(row.bBonus);
+
+            if(diffCell) {
+                const diff = (row.bBase + row.bBonus) - (row.aBase + row.aBonus);
+                diffCell.innerText = fmtDiff(diff);
+                diffCell.style.color = diff > 0 ? 'var(--pos)' : (diff < 0 ? 'var(--neg)' : 'inherit');
+            }
         });
     }
 
-    window.updateBase = function(index, field, value) {
-        data[index][field] = parseFloat(value) || 0;
+    // User updated a cell
+    window.upd = function(idx, field, val) {
+        data[idx][field] = parseFloat(val) || 0;
         recalcAll();
     };
 
-    function updateDashboard() {
-        let s26 = { e:0, t:0 };
-        let s27 = { e:0, t:0 };
-        data.forEach(d => {
-            if (d.year === 2026) { s26.e += d.eBase + d.eBonus; s26.t += d.tBase + d.tBonus; } 
-            else { s27.e += d.eBase + d.eBonus; s27.t += d.tBase + d.tBonus; }
-        });
-        
-        setTxt('sum_26_eset', s26.e); setTxt('sum_26_takeda', s26.t); setTxt('diff_26', s26.t - s26.e, true);
-        setTxt('sum_27_eset', s27.e); setTxt('sum_27_takeda', s27.t); setTxt('diff_27', s27.t - s27.e, true);
-        setTxt('grand_eset', s26.e+s27.e); setTxt('grand_takeda', s26.t+s27.t); setTxt('grand_diff', (s26.t+s27.t)-(s26.e+s27.e), true);
-    }
+    // --- EXPAND / COLLAPSE ---
+    window.toggleYearBody = function(year) {
+        const tb = document.getElementById(`tbody_${year}`);
+        const th = tb.previousElementSibling.querySelector('.year-header');
+        if (tb.classList.contains('hidden')) {
+            tb.classList.remove('hidden');
+            th.classList.remove('collapsed');
+            sessionStorage.setItem(`collapsed_${year}`, 'false');
+        } else {
+            tb.classList.add('hidden');
+            th.classList.add('collapsed');
+            sessionStorage.setItem(`collapsed_${year}`, 'true');
+        }
+    };
 
-    function fmt(n) { return n.toLocaleString('en-US', {maximumFractionDigits:0}) + " €"; }
-    function fmtVal(n) { return n.toFixed(0); }
-    function setTxt(id, v, d=false) { 
-        const el = document.getElementById(id); 
-        el.innerText = (d && v>0?"+":"") + fmt(v); 
-        if(d) el.className = "diff-badge " + (v>=0?"pos":"neg"); 
+    window.toggleAll = function(expand) {
+        for (let y = startYear; y <= endYear; y++) {
+            const state = expand ? 'false' : 'true'; // false = open, true = collapsed in logic above
+            sessionStorage.setItem(`collapsed_${y}`, state);
+            
+            const tb = document.getElementById(`tbody_${y}`);
+            const th = tb.previousElementSibling.querySelector('.year-header');
+            if(expand) {
+                tb.classList.remove('hidden');
+                th.classList.remove('collapsed');
+            } else {
+                tb.classList.add('hidden');
+                th.classList.add('collapsed');
+            }
+        }
+    };
+
+    // --- CONFIG UI HANDLERS ---
+    window.loadConfigToUI = function(comp) {
+        const year = document.getElementById(`year_select_${comp.toLowerCase()}`).value;
+        const conf = (comp === 'A' ? configA : configB)[year];
+
+        document.getElementById(`bonus_pct_${comp.toLowerCase()}`).value = conf.pct;
+        document.getElementById(`lookback_${comp.toLowerCase()}`).value = conf.lookback;
+        document.getElementById(`month_${comp.toLowerCase()}_1`).value = conf.m1;
+        document.getElementById(`month_${comp.toLowerCase()}_2`).value = conf.m2;
+        
+        const radios = document.getElementsByName(`freq_${comp.toLowerCase()}`);
+        for(const r of radios) { r.checked = (r.value === conf.freq); }
+
+        toggleFreqUI(comp, conf.freq);
+    };
+
+    window.saveConfigFromUI = function(comp) {
+        const year = document.getElementById(`year_select_${comp.toLowerCase()}`).value;
+        const configObj = (comp === 'A' ? configA : configB);
+        
+        configObj[year] = {
+            freq: document.querySelector(`input[name="freq_${comp.toLowerCase()}"]:checked`).value,
+            pct: parseFloat(document.getElementById(`bonus_pct_${comp.toLowerCase()}`).value) || 0,
+            lookback: parseInt(document.getElementById(`lookback_${comp.toLowerCase()}`).value) || 0,
+            m1: parseInt(document.getElementById(`month_${comp.toLowerCase()}_1`).value),
+            m2: parseInt(document.getElementById(`month_${comp.toLowerCase()}_2`).value)
+        };
+
+        toggleFreqUI(comp, configObj[year].freq);
+        recalcAll();
+    };
+
+    function toggleFreqUI(comp, freq) {
+        const group2 = document.getElementById(`group_month_${comp.toLowerCase()}_2`);
+        if(freq === "1") group2.classList.add('hidden');
+        else group2.classList.remove('hidden');
     }
 
     // --- BULK TOOLS ---
-    window.loadLastValue = function() {
-        const t = document.getElementById('tool_target').value;
-        document.getElementById('tool_amount').value = lastValues[t] || '';
+    window.setBulkYear = function(year) {
+        const startIdx = (year - startYear) * 12;
+        const endIdx = startIdx + 11;
+        document.getElementById('tool_from').value = startIdx;
+        document.getElementById('tool_to').value = endIdx;
     };
-    window.saveLastValue = function() {
-        const t = document.getElementById('tool_target').value;
-        lastValues[t] = document.getElementById('tool_amount').value;
-    };
+
     window.toggleMode = function() {
         const m = document.getElementById('tool_mode').value;
         const inp = document.getElementById('tool_amount');
-        const lbl = document.getElementById('lbl_amount');
-        if(m === 'percent') { lbl.innerText = 'Increase (%)'; inp.placeholder = 'e.g. 5'; }
-        else { lbl.innerText = 'Amount (€)'; inp.placeholder = 'e.g. 3200'; loadLastValue(); }
+        if(m === 'percent') inp.placeholder = 'e.g. 5';
+        else { inp.placeholder = 'e.g. 3500'; loadLastValue(); }
     };
-    
-    // Apply Logic with Cascade
-    window.applyBulk = function() {
+
+    window.loadLastValue = function() {
         const t = document.getElementById('tool_target').value;
+        document.getElementById('tool_amount').value = lastBulkValues[t] || '';
+    };
+    window.saveLastValue = function() {
+        const t = document.getElementById('tool_target').value;
+        lastBulkValues[t] = document.getElementById('tool_amount').value;
+    };
+
+    window.applyBulk = function() {
+        const t = document.getElementById('tool_target').value; 
         const m = document.getElementById('tool_mode').value;
         const v = parseFloat(document.getElementById('tool_amount').value) || 0;
-        const start = parseInt(document.getElementById('tool_from').value);
-        const end = parseInt(document.getElementById('tool_to').value);
+        const from = parseInt(document.getElementById('tool_from').value);
+        const to = parseInt(document.getElementById('tool_to').value);
         const cascade = document.getElementById('tool_cascade').checked;
 
-        if(start > end) { alert("Start month must be before End month"); return; }
-        
-        const oldEndVal = data[end][t];
+        if (from > to) return alert("Start month must be before End month");
 
-        if(m === 'fixed') {
-            for(let i=start; i<=end; i++) {
-                data[i][t] = v;
-            }
+        const oldEndVal = data[to][t]; 
+
+        if (m === 'fixed') {
+            for (let i = from; i <= to; i++) data[i][t] = v;
         } else {
-            if(start === 0) { alert("Cannot apply raise from Jan 2026 without previous month data."); return; }
-            const base = data[start-1][t];
-            for(let i=start; i<=end; i++) {
-                data[i][t] = Math.round(base * (1 + v/100));
-            }
+            if (from === 0) return alert("Percent needs preceding month.");
+            const base = data[from-1][t];
+            for (let i = from; i <= to; i++) data[i][t] = Math.round(base * (1 + v/100));
         }
 
-        if (cascade && oldEndVal > 0 && end < (data.length - 1)) {
-            const newEndVal = data[end][t];
+        if (cascade && oldEndVal > 0 && to < (data.length - 1)) {
+            const newEndVal = data[to][t];
             const ratio = newEndVal / oldEndVal;
-            
-            if (ratio !== 1) {
-                for (let k = end + 1; k < data.length; k++) {
+            if (Math.abs(ratio - 1) > 0.001) {
+                for (let k = to + 1; k < data.length; k++) {
                     data[k][t] = Math.round(data[k][t] * ratio);
                 }
             }
         }
-
         recalcAll();
     };
 
+    // --- HELPERS ---
+    function updateCompanyNames(save = true) {
+        compAName = document.getElementById('name_comp_a').value || "Company A";
+        compBName = document.getElementById('name_comp_b').value || "Company B";
+        
+        document.getElementById('lbl_conf_a').innerText = compAName;
+        document.getElementById('lbl_conf_b').innerText = compBName;
+        document.getElementById('opt_tool_a').innerText = compAName + " Base";
+        document.getElementById('opt_tool_b').innerText = compBName + " Base";
+        document.getElementById('th_comp_a').innerHTML = compAName + "<br>Base";
+        document.getElementById('th_comp_b').innerHTML = compBName + "<br>Base";
+
+        if(save) {
+            updateDashboard();
+            saveDataLocal();
+        }
+    }
+
+    function populateDropdowns() {
+        const selects = document.querySelectorAll('.month-select');
+        const bulkFrom = document.getElementById('tool_from');
+        const bulkTo = document.getElementById('tool_to');
+
+        selects.forEach(sel => {
+            sel.innerHTML = '';
+            monthsEng.forEach((m, i) => sel.add(new Option(m, i)));
+        });
+
+        bulkFrom.innerHTML = ''; bulkTo.innerHTML = '';
+        data.forEach((d, i) => {
+            const opt = new Option(`${d.monthName} ${d.year}`, i);
+            bulkFrom.add(opt);
+            bulkTo.add(new Option(`${d.monthName} ${d.year}`, i));
+        });
+        bulkTo.value = data.length - 1;
+    }
+
+    // --- STORAGE ---
+    function saveDataLocal() {
+        const payload = {
+            data: data.map(d => ({a: d.aBase, b: d.bBase})),
+            names: { a: compAName, b: compBName },
+            configA: configA,
+            configB: configB
+        };
+        localStorage.setItem('comp_planner_final', JSON.stringify(payload));
+    }
+
+    function loadDataLocal() {
+        const saved = localStorage.getItem('comp_planner_final');
+        if (!saved) return;
+        try {
+            const json = JSON.parse(saved);
+            if(json.data && json.data.length === data.length) {
+                json.data.forEach((r, i) => {
+                    data[i].aBase = r.a || 0;
+                    data[i].bBase = r.b || 0;
+                });
+            }
+            if(json.names) {
+                document.getElementById('name_comp_a').value = json.names.a;
+                document.getElementById('name_comp_b').value = json.names.b;
+            }
+            if(json.configA) configA = json.configA;
+            if(json.configB) configB = json.configB;
+        } catch(e) { console.log('Load error', e); }
+    }
+
     window.resetAll = function() {
-        if(confirm("Reset all data?")) {
-            data.forEach(d => { d.eBase=0; d.eBonus=0; d.tBase=0; d.tBonus=0; });
-            lastValues.eBase=''; lastValues.tBase='';
-            document.getElementById('tool_amount').value = '';
-            recalcAll();
+        if(confirm("Delete all data?")) {
+            localStorage.removeItem('comp_planner_final');
+            location.reload();
         }
     };
 
-    // --- JSON EXPORT / IMPORT ---
     window.exportJSON = function() {
-        // Collect current config values
-        const configData = {};
-        configIds.forEach(id => {
-            configData[id] = document.getElementById(id).value;
-        });
-
-        const payload = {
-            data: data,
-            config: configData
-        };
-
-        const blob = new Blob([JSON.stringify(payload, null, 2)], {type : 'application/json'});
-        const url = URL.createObjectURL(blob);
+        saveDataLocal();
+        const raw = localStorage.getItem('comp_planner_final');
+        const blob = new Blob([raw], {type:'application/json'});
         const a = document.createElement('a');
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = 'compensation_plan.json';
-        document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
     };
 
-    window.importJSON = function(input) {
-        if (!input.files || !input.files[0]) return;
-        const file = input.files[0];
+    window.importJSON = function(el) {
+        if(!el.files[0]) return;
         const reader = new FileReader();
-
         reader.onload = function(e) {
-            try {
-                const json = JSON.parse(e.target.result);
-                
-                if (json.data && Array.isArray(json.data)) {
-                    data = json.data;
-                }
-                
-                if (json.config) {
-                    configIds.forEach(id => {
-                        if (json.config[id] !== undefined) {
-                            const el = document.getElementById(id);
-                            if(el) el.value = json.config[id];
-                        }
-                    });
-                }
-                
-                recalcAll();
-                alert("Import successful!");
-            } catch (err) {
-                alert("Error parsing JSON file");
-                console.error(err);
-            }
+            localStorage.setItem('comp_planner_final', e.target.result);
+            location.reload();
         };
-        reader.readAsText(file);
-        
-        // Reset input so same file can be selected again if needed
-        input.value = '';
+        reader.readAsText(el.files[0]);
+        el.value = '';
     };
 
+    function fmt(n) { return Math.round(n).toLocaleString('en-US') + " €"; }
+    function fmtVal(n) { return n > 0 ? Math.round(n) : ''; }
+    function fmtDiff(n) { return (n>0?'+':'') + Math.round(n); }
+
+    // Start
     init();
+
 </script>
 </body>
 </html>
-
