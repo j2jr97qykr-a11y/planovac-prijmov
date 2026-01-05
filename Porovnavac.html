@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compensation Planner 2026-2027</title>
+  <style>
+    :root { --bg:#0b1020; --card:#111a33; --muted:#9fb0ff; --text:#eef2ff; --line:rgba(255,255,255,.10); --accent: #4f46e5; --accent-hover: #4338ca; --success: #10b981; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: linear-gradient(180deg, #070a14 0%, #0b1020 70%); color:var(--text); min-height: 100vh; padding-bottom: 80px; }
+    
+    header { padding: 16px; border-bottom:1px solid var(--line); position: sticky; top:0; backdrop-filter: blur(10px); background: rgba(7,10,20,.95); z-index: 50; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px; }
+    header h1 { margin:0; font-size: 18px; margin-right: auto; }
+    header .actions { display: flex; gap: 8px; }
+    
+    main { padding: 16px; max-width: 1300px; margin: 0 auto; }
+    
+    /* DASHBOARD */
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .card { background: rgba(17,26,51,.72); border:1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+    .card h3 { margin: 0 0 12px 0; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+    
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; }
+    .stat-total { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-weight: bold; font-size: 16px; color: #fff; display: flex; justify-content: space-between; }
+    .diff-badge { font-size: 13px; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.1); }
+    .pos { color: #4ade80; background: rgba(74, 222, 128, 0.15); }
+    .neg { color: #f87171; background: rgba(248, 113, 113, 0.15); }
+
+    /* CONFIG & TOOLS */
+    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 800px) { .config-grid { grid-template-columns: 1fr; } }
+    
+    .config-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 8px; }
+    .config-col { flex: 1; }
+    .config-col label { font-size: 11px; color: rgba(255,255,255,0.6); display: block; margin-bottom: 4px; }
+    .fixed-val { font-size: 13px; font-weight: bold; color: var(--muted); padding: 8px 0; }
+    .sub-head { font-size: 12px; font-weight: bold; color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 8px; margin-top: 12px; }
+
+    .tools { background: #1a2236; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+    .tool-group { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; min-width: 140px; }
+    .tool-group label { font-size: 11px; color: rgba(255,255,255,0.6); }
+    
+    .checkbox-group { display:flex; align-items:center; gap:8px; width:100%; margin-top:4px; margin-bottom:8px; padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+    .checkbox-group input { width: auto; margin:0; }
+    .checkbox-group label { margin:0; font-size: 12px; color: #fff; cursor:pointer; }
+
+    select, input { background: rgba(0,0,0,0.3); border: 1px solid var(--line); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    select:focus, input:focus { border-color: var(--accent); }
+    
+    button { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; height: 35px; transition: background 0.2s; white-space: nowrap; }
+    button:hover { background: var(--accent-hover); }
+    button.secondary { background: rgba(255,255,255,0.1); }
+    button.secondary:hover { background: rgba(255,255,255,0.15); }
+    
+    /* TABLE */
+    .table-wrapper { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: rgba(0,0,0,0.2); }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    
+    th { text-align: left; padding: 12px; background: #1a233a; color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
+    td { padding: 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .year-sep { background: rgba(79, 70, 229, 0.15); }
+    .year-sep td { padding: 8px 12px; font-weight: bold; color: var(--accent); text-align: center; font-size: 12px; letter-spacing: 2px; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
+
+    td input { background: transparent; border: 1px solid transparent; text-align: right; font-family: 'Courier New', monospace; font-size: 14px; padding: 8px; }
+    td input:hover:not([readonly]) { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+    td input:focus { border-color: var(--accent); background: #0f1629; }
+    td input[readonly] { color: #fbbf24; opacity: 0.9; cursor: default; font-weight: bold; } 
+    
+    .month-cell { padding-left: 12px; font-size: 13px; color: rgba(255,255,255,0.8); width: 120px; }
+    .total-cell { text-align: right; padding-right: 12px; font-weight: bold; width: 120px; font-family: 'Courier New', monospace; }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Compensation Planner</h1>
+    <div style="font-size:12px; opacity:0.7">ESET vs Takeda • 2026 & 2027</div>
+  </div>
+  <div class="actions">
+      <button class="secondary" onclick="exportJSON()">Export JSON</button>
+      <button class="secondary" onclick="document.getElementById('importFile').click()">Import JSON</button>
+      <button class="secondary" style="background:rgba(220, 38, 38, 0.2)" onclick="resetAll()">Reset Data</button>
+  </div>
+  <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSON(this)">
+</header>
+
+<main>
+
+  <div class="dashboard">
+    <div class="card">
+      <h3>2026 Overview</h3>
+      <div class="stat-row"><span>ESET Total:</span> <span id="sum_26_eset">0 €</span></div>
+      <div class="stat-row"><span>Takeda Total:</span> <span id="sum_26_takeda">0 €</span></div>
+      <div class="stat-total"><span>Difference:</span> <span id="diff_26" class="diff-badge">0 €</span></div>
+    </div>
+    <div class="card">
+      <h3>2027 Overview</h3>
+      <div class="stat-row"><span>ESET Total:</span> <span id="sum_27_eset">0 €</span></div>
+      <div class="stat-row"><span>Takeda Total:</span> <span id="sum_27_takeda">0 €</span></div>
+      <div class="stat-total"><span>Difference:</span> <span id="diff_27" class="diff-badge">0 €</span></div>
+    </div>
+    <div class="card" style="border-color: var(--accent);">
+      <h3>Cumulative (2 Years)</h3>
+      <div class="stat-row"><span>Total ESET:</span> <span id="grand_eset">0 €</span></div>
+      <div class="stat-row"><span>Total Takeda:</span> <span id="grand_takeda">0 €</span></div>
+      <div class="stat-total"><span>Net Benefit:</span> <span id="grand_diff" class="diff-badge">0 €</span></div>
+    </div>
+  </div>
+
+  <div class="config-grid">
+      <div class="card">
+          <h3>ESET Bonus Logic</h3>
+          <div style="font-size:11px; opacity:0.6; margin-bottom:12px;">Rule: 20% of Sum of Previous 6 Months</div>
+          
+          <div class="sub-head">Yearly Config (Recurring)</div>
+          <div class="config-row">
+              <div class="config-col">
+                  <label>Payout #1 (Month)</label>
+                  <select id="eset_b1_month" class="month-select" onchange="recalcAll()"></select>
+              </div>
+              <div class="config-col">
+                   <div class="fixed-val">Fixed 20%</div>
+              </div>
+          </div>
+          <div class="config-row">
+              <div class="config-col">
+                  <label>Payout #2 (Month)</label>
+                  <select id="eset_b2_month" class="month-select" onchange="recalcAll()"></select>
+              </div>
+              <div class="config-col">
+                   <div class="fixed-val">Fixed 20%</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="card">
+        <h3>Takeda Bonus Logic</h3>
+        <div style="font-size:11px; opacity:0.6; margin-bottom:12px;">Rule: % of Sum of Previous 12 Months (One-off)</div>
+
+        <div class="sub-head">2026 Settings</div>
+        <div class="config-row">
+            <div class="config-col">
+                <label>Target Rate (%)</label>
+                <input type="number" id="takeda_pct_26" value="15" onchange="recalcAll()">
+            </div>
+            <div class="config-col">
+                <label>Payout Month</label>
+                <select id="takeda_month_26" class="month-select" onchange="recalcAll()"></select>
+            </div>
+        </div>
+
+        <div class="sub-head">2027 Settings</div>
+        <div class="config-row">
+            <div class="config-col">
+                <label>Target Rate (%)</label>
+                <input type="number" id="takeda_pct_27" value="15" onchange="recalcAll()">
+            </div>
+            <div class="config-col">
+                <label>Payout Month</label>
+                <select id="takeda_month_27" class="month-select" onchange="recalcAll()"></select>
+            </div>
+        </div>
+
+    </div>
+  </div>
+
+  <div class="tools">
+    <div style="width:100%; margin-bottom:8px; font-size:12px; font-weight:bold; color:var(--accent); text-transform:uppercase;">
+      ⚡ Bulk Salary Edit (Smart Fill)
+    </div>
+    
+    <div class="tool-group">
+      <label>Target Company</label>
+      <select id="tool_target" onchange="loadLastValue()">
+        <option value="eBase">ESET - Base Salary</option>
+        <option value="tBase">Takeda - Base Rate</option>
+      </select>
+    </div>
+
+    <div class="tool-group">
+      <label>Operation Mode</label>
+      <select id="tool_mode" onchange="toggleMode()">
+        <option value="fixed">Set Fixed Amount (€)</option>
+        <option value="percent">Increase by % (Raise)</option>
+      </select>
+    </div>
+
+    <div class="tool-group">
+      <label id="lbl_amount">Amount (€)</label>
+      <input type="number" id="tool_amount" placeholder="e.g. 3200" onchange="saveLastValue()">
+    </div>
+
+    <div class="tool-group">
+      <label>From Month</label>
+      <select id="tool_from"></select>
+    </div>
+
+    <div class="tool-group">
+      <label>To Month</label>
+      <select id="tool_to"></select>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="tool_cascade" checked>
+        <label for="tool_cascade">Cascade change to future months (keep ratio)?</label>
+    </div>
+
+    <button onclick="applyBulk()">Apply Changes</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th style="width:15%">ESET Base</th>
+          <th style="width:15%; color:#fbbf24">ESET Bonus</th>
+          <th style="width:15%">Takeda Base</th>
+          <th style="width:15%; color:#fbbf24">Takeda Bonus</th>
+          <th style="text-align:right">Diff</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+    const startYear = 2026;
+    const endYear = 2027;
+    const monthsEng = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const lastValues = { eBase: '', tBase: '' };
+    let data = [];
+
+    // Configuration Fields to save/load
+    const configIds = [
+        'eset_b1_month', 'eset_b2_month',
+        'takeda_pct_26', 'takeda_month_26',
+        'takeda_pct_27', 'takeda_month_27'
+    ];
+
+    function init() {
+        let idCounter = 0;
+        // Generate 24 months (0 to 23)
+        for (let y = startYear; y <= endYear; y++) {
+            monthsEng.forEach((m, idx) => {
+                data.push({
+                    id: idCounter++,
+                    year: y,
+                    monthIdx: idx,
+                    monthName: m,
+                    eBase: 0, eBonus: 0,
+                    tBase: 0, tBonus: 0
+                });
+            });
+        }
+
+        // Populate Bulk Edit Selects
+        const fromSel = document.getElementById('tool_from');
+        const toSel = document.getElementById('tool_to');
+        data.forEach((d, i) => {
+            const label = `${d.monthName} ${d.year}`;
+            fromSel.add(new Option(label, i));
+            toSel.add(new Option(label, i));
+        });
+        toSel.value = data.length - 1; 
+
+        // Populate Bonus Selects
+        const bonusSelectors = document.querySelectorAll('.month-select');
+        bonusSelectors.forEach(sel => {
+            monthsEng.forEach((m, i) => sel.add(new Option(m, i)));
+        });
+
+        // Set Default Bonus Months
+        document.getElementById('eset_b1_month').value = 4; // May
+        document.getElementById('eset_b2_month').value = 10; // Nov
+        
+        // Takeda defaults
+        document.getElementById('takeda_month_26').value = 5; // Jun 2026
+        document.getElementById('takeda_month_27').value = 5; // Jun 2027
+
+        recalcAll();
+    }
+
+    function recalcAll() {
+        // Reset Calculated Bonuses only (Base stays)
+        data.forEach(d => { d.eBonus = 0; d.tBonus = 0; });
+
+        // ESET Config
+        const eM1 = parseInt(document.getElementById('eset_b1_month').value);
+        const eM2 = parseInt(document.getElementById('eset_b2_month').value);
+
+        // Takeda Config (Independent years)
+        const tPct26 = parseFloat(document.getElementById('takeda_pct_26').value) || 0;
+        const tMonth26 = parseInt(document.getElementById('takeda_month_26').value);
+        
+        const tPct27 = parseFloat(document.getElementById('takeda_pct_27').value) || 0;
+        const tMonth27 = parseInt(document.getElementById('takeda_month_27').value);
+
+        [2026, 2027].forEach((year, yIdx) => {
+            const offset = yIdx * 12; // 0 for 2026, 12 for 2027
+            
+            // --- ESET CALC ---
+            const eIdx1 = offset + eM1;
+            const eSum1 = getLookbackSum('eBase', eIdx1, 6);
+            if(data[eIdx1]) data[eIdx1].eBonus += eSum1 * 0.20;
+
+            const eIdx2 = offset + eM2;
+            const eSum2 = getLookbackSum('eBase', eIdx2, 6);
+            if(data[eIdx2]) data[eIdx2].eBonus += eSum2 * 0.20;
+
+            // --- TAKEDA CALC (One-off per year) ---
+            if (year === 2026) {
+                const tIdx = offset + tMonth26;
+                const tSum = getLookbackSum('tBase', tIdx, 12);
+                if(data[tIdx]) data[tIdx].tBonus += tSum * (tPct26 / 100);
+            } else {
+                const tIdx = offset + tMonth27;
+                const tSum = getLookbackSum('tBase', tIdx, 12);
+                if(data[tIdx]) data[tIdx].tBonus += tSum * (tPct27 / 100);
+            }
+        });
+
+        renderTable(); 
+        updateDashboard();
+    }
+
+    function getLookbackSum(field, payoutIndex, monthsBack) {
+        let sum = 0;
+        const fallbackVal = data[0] ? data[0][field] : 0;
+
+        for (let i = 1; i <= monthsBack; i++) {
+            let targetIdx = payoutIndex - i;
+            if (targetIdx >= 0) {
+                sum += data[targetIdx][field];
+            } else {
+                sum += fallbackVal;
+            }
+        }
+        return sum;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        let lastYear = null;
+
+        data.forEach((row, index) => {
+            if (row.year !== lastYear) {
+                const sepRow = document.createElement('tr');
+                sepRow.className = 'year-sep';
+                sepRow.innerHTML = `<td colspan="6">${row.year}</td>`;
+                tbody.appendChild(sepRow);
+                lastYear = row.year;
+            }
+
+            const tr = document.createElement('tr');
+            const diff = (row.tBase + row.tBonus) - (row.eBase + row.eBonus);
+            const diffColor = diff > 0 ? '#4ade80' : (diff < 0 ? '#f87171' : 'rgba(255,255,255,0.3)');
+
+            tr.innerHTML = `
+                <td class="month-cell">${row.monthName}</td>
+                <td><input type="number" value="${row.eBase}" onchange="updateBase(${index}, 'eBase', this.value)" placeholder="-"></td>
+                <td><input type="text" value="${row.eBonus ? fmtVal(row.eBonus) : ''}" readonly placeholder="-"></td>
+                <td><input type="number" value="${row.tBase}" onchange="updateBase(${index}, 'tBase', this.value)" placeholder="-"></td>
+                <td><input type="text" value="${row.tBonus ? fmtVal(row.tBonus) : ''}" readonly placeholder="-"></td>
+                <td class="total-cell" style="color:${diffColor}">${fmt(diff)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.updateBase = function(index, field, value) {
+        data[index][field] = parseFloat(value) || 0;
+        recalcAll();
+    };
+
+    function updateDashboard() {
+        let s26 = { e:0, t:0 };
+        let s27 = { e:0, t:0 };
+        data.forEach(d => {
+            if (d.year === 2026) { s26.e += d.eBase + d.eBonus; s26.t += d.tBase + d.tBonus; } 
+            else { s27.e += d.eBase + d.eBonus; s27.t += d.tBase + d.tBonus; }
+        });
+        
+        setTxt('sum_26_eset', s26.e); setTxt('sum_26_takeda', s26.t); setTxt('diff_26', s26.t - s26.e, true);
+        setTxt('sum_27_eset', s27.e); setTxt('sum_27_takeda', s27.t); setTxt('diff_27', s27.t - s27.e, true);
+        setTxt('grand_eset', s26.e+s27.e); setTxt('grand_takeda', s26.t+s27.t); setTxt('grand_diff', (s26.t+s27.t)-(s26.e+s27.e), true);
+    }
+
+    function fmt(n) { return n.toLocaleString('en-US', {maximumFractionDigits:0}) + " €"; }
+    function fmtVal(n) { return n.toFixed(0); }
+    function setTxt(id, v, d=false) { 
+        const el = document.getElementById(id); 
+        el.innerText = (d && v>0?"+":"") + fmt(v); 
+        if(d) el.className = "diff-badge " + (v>=0?"pos":"neg"); 
+    }
+
+    // --- BULK TOOLS ---
+    window.loadLastValue = function() {
+        const t = document.getElementById('tool_target').value;
+        document.getElementById('tool_amount').value = lastValues[t] || '';
+    };
+    window.saveLastValue = function() {
+        const t = document.getElementById('tool_target').value;
+        lastValues[t] = document.getElementById('tool_amount').value;
+    };
+    window.toggleMode = function() {
+        const m = document.getElementById('tool_mode').value;
+        const inp = document.getElementById('tool_amount');
+        const lbl = document.getElementById('lbl_amount');
+        if(m === 'percent') { lbl.innerText = 'Increase (%)'; inp.placeholder = 'e.g. 5'; }
+        else { lbl.innerText = 'Amount (€)'; inp.placeholder = 'e.g. 3200'; loadLastValue(); }
+    };
+    
+    // Apply Logic with Cascade
+    window.applyBulk = function() {
+        const t = document.getElementById('tool_target').value;
+        const m = document.getElementById('tool_mode').value;
+        const v = parseFloat(document.getElementById('tool_amount').value) || 0;
+        const start = parseInt(document.getElementById('tool_from').value);
+        const end = parseInt(document.getElementById('tool_to').value);
+        const cascade = document.getElementById('tool_cascade').checked;
+
+        if(start > end) { alert("Start month must be before End month"); return; }
+        
+        const oldEndVal = data[end][t];
+
+        if(m === 'fixed') {
+            for(let i=start; i<=end; i++) {
+                data[i][t] = v;
+            }
+        } else {
+            if(start === 0) { alert("Cannot apply raise from Jan 2026 without previous month data."); return; }
+            const base = data[start-1][t];
+            for(let i=start; i<=end; i++) {
+                data[i][t] = Math.round(base * (1 + v/100));
+            }
+        }
+
+        if (cascade && oldEndVal > 0 && end < (data.length - 1)) {
+            const newEndVal = data[end][t];
+            const ratio = newEndVal / oldEndVal;
+            
+            if (ratio !== 1) {
+                for (let k = end + 1; k < data.length; k++) {
+                    data[k][t] = Math.round(data[k][t] * ratio);
+                }
+            }
+        }
+
+        recalcAll();
+    };
+
+    window.resetAll = function() {
+        if(confirm("Reset all data?")) {
+            data.forEach(d => { d.eBase=0; d.eBonus=0; d.tBase=0; d.tBonus=0; });
+            lastValues.eBase=''; lastValues.tBase='';
+            document.getElementById('tool_amount').value = '';
+            recalcAll();
+        }
+    };
+
+    // --- JSON EXPORT / IMPORT ---
+    window.exportJSON = function() {
+        // Collect current config values
+        const configData = {};
+        configIds.forEach(id => {
+            configData[id] = document.getElementById(id).value;
+        });
+
+        const payload = {
+            data: data,
+            config: configData
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {type : 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'compensation_plan.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    window.importJSON = function(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                
+                if (json.data && Array.isArray(json.data)) {
+                    data = json.data;
+                }
+                
+                if (json.config) {
+                    configIds.forEach(id => {
+                        if (json.config[id] !== undefined) {
+                            const el = document.getElementById(id);
+                            if(el) el.value = json.config[id];
+                        }
+                    });
+                }
+                
+                recalcAll();
+                alert("Import successful!");
+            } catch (err) {
+                alert("Error parsing JSON file");
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Reset input so same file can be selected again if needed
+        input.value = '';
+    };
+
+    init();
+</script>
+</body>
+</html>
